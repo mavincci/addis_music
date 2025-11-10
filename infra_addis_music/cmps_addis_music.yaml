@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:8.2.1
+    container_name: addis_music_db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: usr_db_addis_music
+      MONGO_INITDB_ROOT_PASSWORD: pass_db_addis_music
+      MONGO_INITDB_DATABASE: db_addis_music
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - addis_music_network
+
+volumes:
+  mongodb_data:

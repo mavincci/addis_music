@@ -1,5 +1,7 @@
 import dotenv from 'dotenv'
 import express from 'express'
+import mongoose from 'mongoose'
+
 import { healthRouter, songsRouter } from './routes'
 
 dotenv.config()
@@ -11,6 +13,20 @@ const app = express()
 app.use('/api/health', healthRouter)
 app.use('/api/songs', songsRouter)
 
-app.listen(port, () => {
-  console.log(`addis_music running @[${port}]`)
-})
+async function connectDB() {
+  try {
+    await mongoose.connect(process.env.MONGODB_URI!)
+    console.log('DB: connected')
+  } catch (error) {
+    console.error('DB: connection error:', error)
+  }
+}
+
+const startServer = async () => {
+  await connectDB()
+  app.listen(port, () => {
+    console.log(`addis_music running @[${port}]`)
+  })
+}
+
+startServer()

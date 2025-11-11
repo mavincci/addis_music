@@ -15,6 +15,7 @@
     "@eslint/js": "^9.39.1",
     "@types/bun": "latest",
     "@types/express": "^5.0.5",
+    "@types/mongoose": "^5.11.97",
     "eslint": "^9.39.1",
     "nodemon": "^3.1.7",
     "prettier": "^3.4.2",
@@ -25,6 +26,7 @@
   },
   "dependencies": {
     "dotenv": "^17.2.3",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "mongoose": "^8.19.3"
   }
 }

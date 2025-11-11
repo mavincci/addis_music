@@ -2,27 +2,33 @@ import type { Request, Response } from 'express'
 import { SongConverter, type CreateSongDto } from '../dtos/song.dto'
 import { SongModel } from '../models/song-model'
 
-function getAllSongs(req: Request, resp: Response) {
+async function getAllSongs(req: Request, resp: Response) {
   console.log('Fetch all songs called')
+
+  const allSongs = await SongModel.find()
+
   resp.status(200).json({
     timestamp: new Date().toISOString(),
     isError: false,
     message: 'FETCH_ALL_SONGS_SUCCESS',
-    data: [],
+    data: SongConverter.toDtoArray(allSongs),
   })
 }
 
-function getSong(req: Request, resp: Response) {
+async function getSong(req: Request, resp: Response) {
   console.log('Fetch a song called')
 
   const songId = req.params.song_id
 
   console.log(`FETCH_SONG: with id {${songId}}`)
+
+  const tempSong = await SongModel.findById(songId);
+
   resp.status(200).json({
     timestamp: new Date().toISOString(),
     isError: false,
     message: 'FETCH_SONG_SUCCESS',
-    data: {},
+    data: SongConverter.toDto(tempSong),
   })
 }
 

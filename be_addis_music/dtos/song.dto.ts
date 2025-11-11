@@ -15,6 +15,13 @@ export interface CreateSongDto {
   genre: string
 }
 
+export interface UpdateSongDto {
+  title?: string
+  artist?: string
+  album?: string
+  genre?: string
+}
+
 export class SongConverter {
   static toDto(song: any): SongDto {
     return {

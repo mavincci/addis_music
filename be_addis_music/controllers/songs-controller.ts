@@ -16,20 +16,33 @@ async function getAllSongs(req: Request, resp: Response) {
 }
 
 async function getSong(req: Request, resp: Response) {
-  console.log('Fetch a song called')
+  try {
+    const songId = req.params.song_id
+    const tempSong = await SongModel.findById(songId)
 
-  const songId = req.params.song_id
+    if (!tempSong) {
+      return resp.status(404).json({
+        timestamp: new Date().toISOString(),
+        isError: true,
+        message: 'SONG_NOT_FOUND',
+        data: undefined,
+      })
+    }
 
-  console.log(`FETCH_SONG: with id {${songId}}`)
-
-  const tempSong = await SongModel.findById(songId);
-
-  resp.status(200).json({
-    timestamp: new Date().toISOString(),
-    isError: false,
-    message: 'FETCH_SONG_SUCCESS',
-    data: SongConverter.toDto(tempSong),
-  })
+    resp.status(200).json({
+      timestamp: new Date().toISOString(),
+      isError: false,
+      message: 'FETCH_SONG_SUCCESS',
+      data: SongConverter.toDto(tempSong),
+    })
+  } catch (error) {
+    resp.status(400).json({
+      timestamp: new Date().toISOString(),
+      isError: true,
+      message: 'INVALID_ID_FORMAT',
+      data: undefined,
+    })
+  }
 }
 
 async function addSong(req: Request, resp: Response) {
@@ -67,19 +80,34 @@ async function addSong(req: Request, resp: Response) {
   })
 }
 
-function deleteSong(req: Request, resp: Response) {
-  console.log('Add song called')
+async function deleteSong(req: Request, resp: Response) {
+  try {
+    const songId = req.params.song_id
+    const deletedSong = await SongModel.findByIdAndDelete(songId)
 
-  const songId = req.params.song_id
+    if (!deletedSong) {
+      return resp.status(404).json({
+        timestamp: new Date().toISOString(),
+        isError: true,
+        message: 'SONG_NOT_FOUND',
+        data: undefined,
+      })
+    }
 
-  console.log(`DELETE_SONG: with id {${songId}}`)
-
-  resp.status(201).json({
-    timestamp: new Date().toISOString(),
-    isError: false,
-    message: 'DELETE_SONG_SUCCESS',
-    data: undefined,
-  })
+    resp.status(200).json({
+      timestamp: new Date().toISOString(),
+      isError: false,
+      message: 'DELETE_SONG_SUCCESS',
+      data: undefined,
+    })
+  } catch (error) {
+    resp.status(400).json({
+      timestamp: new Date().toISOString(),
+      isError: true,
+      message: 'INVALID_ID_FORMAT',
+      data: undefined,
+    })
+  }
 }
 
 export { getAllSongs, getSong, addSong, deleteSong }

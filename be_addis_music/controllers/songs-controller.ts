@@ -1,4 +1,6 @@
 import type { Request, Response } from 'express'
+import { SongConverter, type CreateSongDto } from '../dtos/song.dto'
+import { SongModel } from '../models/song-model'
 
 function getAllSongs(req: Request, resp: Response) {
   console.log('Fetch all songs called')
@@ -24,14 +26,38 @@ function getSong(req: Request, resp: Response) {
   })
 }
 
-function addSong(req: Request, resp: Response) {
+async function addSong(req: Request, resp: Response) {
   console.log('Add song called')
+
+  const tempSong: CreateSongDto = req.body
+
+  console.log(`Add Song: `, tempSong)
+
+  const existingSong = await SongModel.findOne({ title: tempSong.title.trim() })
+
+  if (existingSong) {
+    return resp.status(409).json({
+      timestamp: new Date().toISOString(),
+      isError: true,
+      message: 'SONG_ALREADY_EXISTS',
+      data: undefined,
+    })
+  }
+
+  const tempSongDoc = new SongModel({
+    title: tempSong.title.trim(),
+    artist: tempSong.artist.trim(),
+    album: tempSong.album.trim(),
+    genre: tempSong.genre.trim(),
+  })
+
+  const savedSong = await tempSongDoc.save()
 
   resp.status(201).json({
     timestamp: new Date().toISOString(),
     isError: false,
     message: 'ADD_SONG_SUCCESS',
-    data: {},
+    data: SongConverter.toDto(savedSong),
   })
 }
 

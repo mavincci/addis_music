@@ -1,5 +1,5 @@
 import dotenv from 'dotenv'
-import express from 'express'
+import express, { json } from 'express'
 import mongoose from 'mongoose'
 
 import { healthRouter, songsRouter } from './routes'
@@ -9,6 +9,8 @@ dotenv.config()
 const port = process.env.PORT || 3000
 
 const app = express()
+
+app.use(json())
 
 app.use('/api/health', healthRouter)
 app.use('/api/songs', songsRouter)

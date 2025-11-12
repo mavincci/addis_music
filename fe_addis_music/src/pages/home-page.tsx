@@ -1,8 +1,9 @@
+import { AppBar } from '../components/app-bar'
 export const HomePage = () => {
   return (
     <>
-      <section>APpbar</section>
       <section>Metadata</section>
+      <AppBar />
       <section>Songs list</section>
     </>
   )

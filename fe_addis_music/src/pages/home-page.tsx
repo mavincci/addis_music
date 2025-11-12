@@ -1,9 +1,11 @@
 import { AppBar } from '../components/app-bar'
+import { SongMetadata } from '../components/song-metadata'
+
 export const HomePage = () => {
   return (
     <>
-      <section>Metadata</section>
       <AppBar />
+      <SongMetadata />
       <section>Songs list</section>
     </>
   )

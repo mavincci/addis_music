@@ -9,6 +9,9 @@ const AppBarStyled = styled.section`
   font-weight: 600;
   display: flex;
   justify-content: center;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
 `
 
 export const AppBar = () => {

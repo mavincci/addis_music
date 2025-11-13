@@ -80,6 +80,38 @@ async function addSong(req: Request, resp: Response) {
   })
 }
 
+async function addMultipleSongs(req: Request, resp: Response) {
+  console.log('Add multiple songs called')
+
+  const songs: CreateSongDto[] = req.body
+  const addedSongs = []
+
+  for (const songData of songs) {
+    const existingSong = await SongModel.findOne({
+      title: songData.title.trim(),
+    })
+
+    if (!existingSong) {
+      const tempSongDoc = new SongModel({
+        title: songData.title.trim(),
+        artist: songData.artist.trim(),
+        album: songData.album.trim(),
+        genre: songData.genre.trim(),
+      })
+
+      const savedSong = await tempSongDoc.save()
+      addedSongs.push(SongConverter.toDto(savedSong))
+    }
+  }
+
+  resp.status(201).json({
+    timestamp: new Date().toISOString(),
+    isError: false,
+    message: 'ADD_MULTIPLE_SONGS_SUCCESS',
+    data: addedSongs,
+  })
+}
+
 async function deleteSong(req: Request, resp: Response) {
   try {
     const songId = req.params.song_id
@@ -110,4 +142,4 @@ async function deleteSong(req: Request, resp: Response) {
   }
 }
 
-export { getAllSongs, getSong, addSong, deleteSong }
+export { getAllSongs, getSong, addSong, addMultipleSongs, deleteSong }

@@ -1,4 +1,4 @@
-import { call, put, takeEvery } from 'redux-saga/effects'
+import { call, put, takeEvery, select } from 'redux-saga/effects'
 import { PayloadAction } from '@reduxjs/toolkit'
 import { api } from './api'
 import {
@@ -16,6 +16,7 @@ import {
   updateSongFailure,
   CreateSongPayload,
   Song,
+  PaginationInfo,
 } from './songs-slice'
 
 function* fetchSongsSaga(
@@ -55,6 +56,11 @@ function* deleteSongSaga(action: PayloadAction<string>) {
   try {
     yield call(api.deleteSong, action.payload)
     yield put(deleteSongSuccess(action.payload))
+    const state: { songs: { pagination: PaginationInfo | null } } =
+      yield select()
+    const currentPage = state.songs.pagination?.page || 1
+    const currentLimit = state.songs.pagination?.limit || 5
+    yield put(fetchSongsRequest({ page: currentPage, limit: currentLimit }))
   } catch (error) {
     yield put(
       deleteSongFailure(

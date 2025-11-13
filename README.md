@@ -18,21 +18,29 @@ addis_music/
 
 ## Getting Started
 
-### 1. Start the Database
+### Option 1: Docker Compose (Recommended)
 
-First, start the MongoDB database using Docker Compose:
+Run the entire application with one command:
+
+```bash
+docker-compose -f docker-compose.dev.yml up --build
+```
+
+This will start:
+- MongoDB on `localhost:27017`
+- Backend API on `http://localhost:3000`
+- Frontend on `http://localhost:80`
+
+### Option 2: Manual Setup
+
+#### 1. Start the Database
 
 ```bash
 cd infra_addis_music
 docker-compose -f cmps_addis_music.yaml up -d
 ```
 
-This will start MongoDB on `localhost:27017` with the following credentials:
-- Username: `usr_db_addis_music`
-- Password: `pass_db_addis_music`
-- Database: `db_addis_music`
-
-### 2. Setup and Run Backend
+#### 2. Setup and Run Backend
 
 ```bash
 cd be_addis_music
@@ -40,17 +48,13 @@ bun install
 bun run dev
 ```
 
-The backend API will be available at `http://localhost:3000`
-
-### 3. Setup and Run Frontend
+#### 3. Setup and Run Frontend
 
 ```bash
 cd fe_addis_music
 bun install
 bun run dev
 ```
-
-The frontend will be available at `http://localhost:5173`
 
 ## Environment Variables
 

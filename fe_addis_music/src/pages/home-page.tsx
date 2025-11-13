@@ -1,53 +1,42 @@
+import { useEffect } from 'react'
 import { AppBar } from '../components/app-bar'
 import { SongsList } from '../components/song-list'
 import { SongMetadata } from '../components/song-metadata'
-
-const demoSongs = [
-  {
-    _id: '1',
-    title: 'Blinding Lights',
-    artist: 'The Weeknd',
-    album: 'After Hours',
-    genre: 'Pop',
-    createdAt: new Date('2023-01-15'),
-    updatedAt: new Date('2023-01-15'),
-  },
-  {
-    _id: '2',
-    title: 'Rolling in the Deep',
-    artist: 'Adele',
-    album: '21',
-    genre: 'Soul',
-    createdAt: new Date('2023-02-10'),
-    updatedAt: new Date('2023-02-10'),
-  },
-  {
-    _id: '3',
-    title: 'Bohemian Rhapsody',
-    artist: 'Queen',
-    album: 'A Night at the Opera',
-    genre: 'Rock',
-    createdAt: new Date('2023-03-05'),
-    updatedAt: new Date('2023-03-05'),
-  },
-  {
-    _id: '4',
-    title: 'Billie Jean',
-    artist: 'Michael Jackson',
-    album: 'Thriller',
-    genre: 'Pop',
-    createdAt: new Date('2023-04-20'),
-    updatedAt: new Date('2023-04-20'),
-  },
-]
+import { useAppDispatch, useAppSelector } from '../store/hooks'
+import { fetchSongsRequest, deleteSongRequest } from '../store/songs-slice'
 
 export const HomePage = () => {
+  const dispatch = useAppDispatch()
+  const { songs, loading, pagination } = useAppSelector((state) => state.songs)
+
+  useEffect(() => {
+    dispatch(fetchSongsRequest({ page: 1, limit: 5 }))
+  }, [])
+
   const handleDeleteSong = (id: string) => {
-    console.log('Delete song with id:', id)
+    dispatch(deleteSongRequest(id))
   }
 
   const handleEditSong = (song: any) => {
     console.log('Edit song:', song)
+  }
+
+  const handlePageChange = (page: number) => {
+    dispatch(fetchSongsRequest({ page, limit: pagination?.limit || 5 }))
+  }
+
+  const handleLimitChange = (limit: number) => {
+    dispatch(fetchSongsRequest({ page: 1, limit }))
+  }
+
+  if (loading) {
+    return (
+      <>
+        <AppBar />
+        <SongMetadata />
+        <div style={{ textAlign: 'center', padding: '20px' }}>Loading...</div>
+      </>
+    )
   }
 
   return (
@@ -55,9 +44,20 @@ export const HomePage = () => {
       <AppBar />
       <SongMetadata />
       <SongsList
-        songs={demoSongs}
+        songs={songs}
         onDeleteSong={handleDeleteSong}
         onEditSong={handleEditSong}
+        pagination={
+          pagination
+            ? {
+                page: pagination.page,
+                totalPages: pagination.totalPages,
+                limit: pagination.limit,
+              }
+            : undefined
+        }
+        onLimitChange={handleLimitChange}
+        onPageChange={handlePageChange}
       />
     </>
   )

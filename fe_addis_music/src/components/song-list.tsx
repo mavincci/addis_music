@@ -1,6 +1,7 @@
 import { css } from '@emotion/css'
 import styled from '@emotion/styled'
 import { MdClose, MdEdit } from 'react-icons/md'
+import { Pagination } from './pagination'
 
 interface Song {
   _id: string
@@ -138,12 +139,22 @@ interface SongsListProps {
   songs?: Song[]
   onDeleteSong?: (id: string) => void
   onEditSong?: (song: Song) => void
+  pagination?: {
+    page: number
+    totalPages: number
+    limit: number
+  }
+  onPageChange?: (page: number) => void
+  onLimitChange?: (limit: number) => void
 }
 
 export const SongsList = ({
   songs = [],
   onDeleteSong = () => {},
   onEditSong = () => {},
+  pagination,
+  onPageChange = () => {},
+  onLimitChange = () => {},
 }: SongsListProps) => {
   if (songs.length === 0) {
     return (
@@ -163,6 +174,15 @@ export const SongsList = ({
 
   return (
     <SongsListStyled>
+      {pagination && (
+        <Pagination
+          currentPage={pagination.page}
+          totalPages={pagination.totalPages}
+          onPageChange={onPageChange}
+          limit={pagination.limit}
+          onLimitChange={onLimitChange}
+        />
+      )}
       {songs.map((song) => (
         <SongItem
           key={song._id}

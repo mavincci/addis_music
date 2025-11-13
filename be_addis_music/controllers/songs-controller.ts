@@ -1,5 +1,9 @@
 import type { Request, Response } from 'express'
-import { SongConverter, type CreateSongDto } from '../dtos/song.dto'
+import {
+  SongConverter,
+  type CreateSongDto,
+  type UpdateSongDto,
+} from '../dtos/song.dto'
 import { SongModel } from '../models/song-model'
 
 async function getAllSongs(req: Request, resp: Response) {
@@ -129,6 +133,48 @@ async function addMultipleSongs(req: Request, resp: Response) {
   })
 }
 
+async function updateSong(req: Request, resp: Response) {
+  try {
+    const songId = req.params.song_id
+    const updateData: UpdateSongDto = req.body
+
+    const updateFields: any = {}
+    if (updateData.title) updateFields.title = updateData.title.trim()
+    if (updateData.artist) updateFields.artist = updateData.artist.trim()
+    if (updateData.album) updateFields.album = updateData.album.trim()
+    if (updateData.genre) updateFields.genre = updateData.genre.trim()
+
+    const updatedSong = await SongModel.findByIdAndUpdate(
+      songId,
+      updateFields,
+      { new: true }
+    )
+
+    if (!updatedSong) {
+      return resp.status(404).json({
+        timestamp: new Date().toISOString(),
+        isError: true,
+        message: 'SONG_NOT_FOUND',
+        data: undefined,
+      })
+    }
+
+    resp.status(200).json({
+      timestamp: new Date().toISOString(),
+      isError: false,
+      message: 'UPDATE_SONG_SUCCESS',
+      data: SongConverter.toDto(updatedSong),
+    })
+  } catch (error) {
+    resp.status(400).json({
+      timestamp: new Date().toISOString(),
+      isError: true,
+      message: 'INVALID_ID_FORMAT',
+      data: undefined,
+    })
+  }
+}
+
 async function deleteSong(req: Request, resp: Response) {
   try {
     const songId = req.params.song_id
@@ -159,4 +205,11 @@ async function deleteSong(req: Request, resp: Response) {
   }
 }
 
-export { getAllSongs, getSong, addSong, addMultipleSongs, deleteSong }
+export {
+  getAllSongs,
+  getSong,
+  addSong,
+  addMultipleSongs,
+  updateSong,
+  deleteSong,
+}

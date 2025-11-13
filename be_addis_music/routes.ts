@@ -6,6 +6,7 @@ import {
   deleteSong,
   getAllSongs,
   getSong,
+  updateSong,
 } from './controllers/songs-controller'
 
 const healthRouter = Router()
@@ -19,6 +20,7 @@ songsRouter.get('/', getAllSongs)
 songsRouter.get('/:song_id', getSong)
 songsRouter.post('/', addSong)
 songsRouter.post('/multiple', addMultipleSongs)
+songsRouter.put('/:song_id', updateSong)
 songsRouter.delete('/:song_id', deleteSong)
 
 export { healthRouter, songsRouter }

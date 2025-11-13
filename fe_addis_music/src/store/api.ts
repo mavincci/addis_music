@@ -29,4 +29,19 @@ export const api = {
       method: 'DELETE',
     })
   },
+
+  updateSong: async (song: Song): Promise<Song> => {
+    const response = await fetch(`${API_BASE_URL}/songs/${song._id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        title: song.title,
+        artist: song.artist,
+        album: song.album,
+        genre: song.genre,
+      }),
+    })
+    const data = await response.json()
+    return data.data
+  },
 }

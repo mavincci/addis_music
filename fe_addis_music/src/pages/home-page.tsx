@@ -1,13 +1,20 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { AppBar } from '../components/app-bar'
 import { SongsList } from '../components/song-list'
 import { SongMetadata } from '../components/song-metadata'
+import { EditSongDialog } from '../components/edit-song-dialog'
 import { useAppDispatch, useAppSelector } from '../store/hooks'
-import { fetchSongsRequest, deleteSongRequest } from '../store/songs-slice'
+import {
+  fetchSongsRequest,
+  deleteSongRequest,
+  updateSongRequest,
+  Song,
+} from '../store/songs-slice'
 
 export const HomePage = () => {
   const dispatch = useAppDispatch()
   const { songs, loading, pagination } = useAppSelector((state) => state.songs)
+  const [editingSong, setEditingSong] = useState<Song | null>(null)
 
   useEffect(() => {
     dispatch(fetchSongsRequest({ page: 1, limit: 5 }))
@@ -17,8 +24,17 @@ export const HomePage = () => {
     dispatch(deleteSongRequest(id))
   }
 
-  const handleEditSong = (song: any) => {
-    console.log('Edit song:', song)
+  const handleEditSong = (song: Song) => {
+    setEditingSong(song)
+  }
+
+  const handleSaveEdit = (song: Song) => {
+    dispatch(updateSongRequest(song))
+    setEditingSong(null)
+  }
+
+  const handleCloseEdit = () => {
+    setEditingSong(null)
   }
 
   const handlePageChange = (page: number) => {
@@ -58,6 +74,11 @@ export const HomePage = () => {
         }
         onLimitChange={handleLimitChange}
         onPageChange={handlePageChange}
+      />
+      <EditSongDialog
+        song={editingSong}
+        onClose={handleCloseEdit}
+        onSave={handleSaveEdit}
       />
     </>
   )

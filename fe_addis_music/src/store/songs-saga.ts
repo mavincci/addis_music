@@ -11,6 +11,9 @@ import {
   deleteSongRequest,
   deleteSongSuccess,
   deleteSongFailure,
+  updateSongRequest,
+  updateSongSuccess,
+  updateSongFailure,
   CreateSongPayload,
   Song,
 } from './songs-slice'
@@ -61,8 +64,22 @@ function* deleteSongSaga(action: PayloadAction<string>) {
   }
 }
 
+function* updateSongSaga(action: PayloadAction<Song>) {
+  try {
+    const song: Song = yield call(api.updateSong, action.payload)
+    yield put(updateSongSuccess(song))
+  } catch (error) {
+    yield put(
+      updateSongFailure(
+        error instanceof Error ? error.message : 'Failed to update song'
+      )
+    )
+  }
+}
+
 export function* songsSaga() {
   yield takeEvery(fetchSongsRequest.type, fetchSongsSaga)
   yield takeEvery(createSongRequest.type, createSongSaga)
   yield takeEvery(deleteSongRequest.type, deleteSongSaga)
+  yield takeEvery(updateSongRequest.type, updateSongSaga)
 }

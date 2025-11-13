@@ -1,5 +1,5 @@
 import { call, put, takeEvery, select } from 'redux-saga/effects'
-import { PayloadAction } from '@reduxjs/toolkit'
+import type { PayloadAction } from '@reduxjs/toolkit'
 import { api } from './api'
 import {
   fetchSongsRequest,
@@ -17,10 +17,10 @@ import {
   fetchMetadataRequest,
   fetchMetadataSuccess,
   fetchMetadataFailure,
-  CreateSongPayload,
-  Song,
-  PaginationInfo,
-  MetadataInfo,
+  type CreateSongPayload,
+  type Song,
+  type PaginationInfo,
+  type MetadataInfo,
 } from './songs-slice'
 
 function* fetchSongsSaga(
@@ -47,7 +47,7 @@ function* createSongSaga(action: PayloadAction<CreateSongPayload>) {
   try {
     const song: Song = yield call(api.createSong, action.payload)
     yield put(createSongSuccess(song))
-    yield put(createSongFailure(null))
+    yield put(createSongFailure(''))
     yield put(fetchMetadataRequest())
     const state: { songs: { pagination: PaginationInfo | null } } =
       yield select()

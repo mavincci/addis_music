@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
 
 export interface Song {
   _id: string
@@ -54,7 +54,7 @@ const songsSlice = createSlice({
   reducers: {
     fetchSongsRequest: (
       state,
-      action: PayloadAction<{ page?: number; limit?: number }>
+      _action: PayloadAction<{ page?: number; limit?: number }>
     ) => {
       state.loading = true
       state.error = null
@@ -71,7 +71,7 @@ const songsSlice = createSlice({
       state.loading = false
       state.error = action.payload
     },
-    createSongRequest: (state, action: PayloadAction<CreateSongPayload>) => {
+    createSongRequest: (state, _action: PayloadAction<CreateSongPayload>) => {
       state.loading = true
     },
     createSongSuccess: (state, action: PayloadAction<Song>) => {
@@ -82,7 +82,7 @@ const songsSlice = createSlice({
       state.loading = false
       state.error = action.payload
     },
-    deleteSongRequest: (state, action: PayloadAction<string>) => {
+    deleteSongRequest: (state, _action: PayloadAction<string>) => {
       state.loading = true
     },
     deleteSongSuccess: (state, action: PayloadAction<string>) => {
@@ -93,7 +93,7 @@ const songsSlice = createSlice({
       state.loading = false
       state.error = action.payload
     },
-    updateSongRequest: (state, action: PayloadAction<Song>) => {
+    updateSongRequest: (state, _action: PayloadAction<Song>) => {
       state.loading = true
     },
     updateSongSuccess: (state, action: PayloadAction<Song>) => {

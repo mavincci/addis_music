@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import styled from '@emotion/styled'
-import { useAppSelector, useAppDispatch } from '../store/hooks'
+import { useAppSelector } from '../store/hooks'
 import { MetadataDialog } from './metadata-dialog'
 
 const SongMetadataStyled = styled.section`

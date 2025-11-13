@@ -11,13 +11,13 @@ import {
   updateSongRequest,
   createSongRequest,
   fetchMetadataRequest,
-  Song,
-  CreateSongPayload,
+  type Song,
+  type CreateSongPayload,
 } from '../store/songs-slice'
 
 export const HomePage = () => {
   const dispatch = useAppDispatch()
-  const { songs, loading, pagination, error, metadata } = useAppSelector(
+  const { songs, loading, pagination, error } = useAppSelector(
     (state) => state.songs
   )
   const [editingSong, setEditingSong] = useState<Song | null>(null)

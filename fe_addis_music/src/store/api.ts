@@ -21,6 +21,11 @@ export const api = {
       body: JSON.stringify(song),
     })
     const data = await response.json()
+    if (!response.ok) {
+      throw new Error(
+        `${response.status}: ${data.message || 'Failed to create song'}`
+      )
+    }
     return data.data
   },
 

@@ -3,20 +3,15 @@ import { css } from '@emotion/css'
 import styled from '@emotion/styled'
 import { MdClose } from 'react-icons/md'
 
-interface Song {
-  _id: string
-  title: string
-  artist: string
-  album: string
-  genre: string
-  createdAt: Date
-  updatedAt: Date
-}
-
-interface EditSongDialogProps {
-  song: Song | null
+interface AddSongDialogProps {
+  isOpen: boolean
   onClose: () => void
-  onSave: (song: Song) => void
+  onSave: (song: {
+    title: string
+    artist: string
+    album: string
+    genre: string
+  }) => void
   error?: string | null
 }
 
@@ -104,42 +99,34 @@ const ErrorMessage = styled.div`
   border-radius: 4px;
 `
 
-export const EditSongDialog = ({
-  song,
+export const AddSongDialog = ({
+  isOpen,
   onClose,
   onSave,
   error,
-}: EditSongDialogProps) => {
+}: AddSongDialogProps) => {
   const dialogRef = useRef<HTMLDialogElement>(null)
   const [formData, setFormData] = useState({
-    title: song?.title || '',
-    artist: song?.artist || '',
-    album: song?.album || '',
-    genre: song?.genre || '',
+    title: '',
+    artist: '',
+    album: '',
+    genre: '',
   })
 
   useEffect(() => {
-    if (song && dialogRef.current) {
+    if (isOpen && dialogRef.current) {
       dialogRef.current.showModal()
-      setFormData({
-        title: song.title,
-        artist: song.artist,
-        album: song.album,
-        genre: song.genre,
-      })
-    } else if (!song && dialogRef.current) {
+      setFormData({ title: '', artist: '', album: '', genre: '' })
+    } else if (!isOpen && dialogRef.current) {
       dialogRef.current.close()
     }
-  }, [song])
+  }, [isOpen])
 
-  if (!song) return null
+  if (!isOpen) return null
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    onSave({
-      ...song,
-      ...formData,
-    })
+    onSave(formData)
   }
 
   const handleChange = (field: string, value: string) => {
@@ -154,7 +141,7 @@ export const EditSongDialog = ({
             margin: 0;
           `}
         >
-          Edit Song
+          Add New Song
         </h3>
         <button
           type='button'
@@ -223,7 +210,7 @@ export const EditSongDialog = ({
             Cancel
           </Button>
           <Button type='submit' variant='primary'>
-            Save
+            Add Song
           </Button>
         </ButtonGroup>
       </Form>

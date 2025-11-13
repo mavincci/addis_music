@@ -14,7 +14,7 @@ async function getAllSongs(req: Request, resp: Response) {
   const skip = (page - 1) * limit
 
   const [songs, total] = await Promise.all([
-    SongModel.find().skip(skip).limit(limit),
+    SongModel.find().sort({ createdAt: -1 }).skip(skip).limit(limit),
     SongModel.countDocuments(),
   ])
 

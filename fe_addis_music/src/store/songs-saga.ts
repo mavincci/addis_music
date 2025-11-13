@@ -43,12 +43,22 @@ function* createSongSaga(action: PayloadAction<CreateSongPayload>) {
   try {
     const song: Song = yield call(api.createSong, action.payload)
     yield put(createSongSuccess(song))
-  } catch (error) {
-    yield put(
-      createSongFailure(
-        error instanceof Error ? error.message : 'Failed to create song'
-      )
-    )
+    // Clear error on success
+    yield put(createSongFailure(null))
+    // Refresh the current page after creation
+    const state: { songs: { pagination: PaginationInfo | null } } =
+      yield select()
+    const currentPage = state.songs.pagination?.page || 1
+    const currentLimit = state.songs.pagination?.limit || 5
+    yield put(fetchSongsRequest({ page: currentPage, limit: currentLimit }))
+  } catch (error: any) {
+    let errorMessage = 'Failed to create song'
+    if (error.message && error.message.includes('409')) {
+      errorMessage = 'Song already exists'
+    } else if (error instanceof Error) {
+      errorMessage = error.message
+    }
+    yield put(createSongFailure(errorMessage))
   }
 }
 

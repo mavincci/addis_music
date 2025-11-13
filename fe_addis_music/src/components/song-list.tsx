@@ -47,13 +47,16 @@ const SongItem = ({ song, onDelete, onEdit }: SongItemProps) => {
     songs: Song[]
   }>({ isOpen: false, title: '', songs: [] })
 
+  const API_BASE_URL =
+    import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api'
+
   const handleFieldClick = async (
     type: 'artist' | 'album' | 'genre',
     value: string
   ) => {
     try {
       const response = await fetch(
-        `http://localhost:3000/api/songs/by-${type}/${encodeURIComponent(value)}`
+        `${API_BASE_URL}/songs/by-${type}/${encodeURIComponent(value)}`
       )
       const data = await response.json()
       setDialogState({

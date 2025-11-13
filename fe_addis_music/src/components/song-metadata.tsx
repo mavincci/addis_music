@@ -47,11 +47,12 @@ export const SongMetadata = () => {
     items: { name: string; count: number }[]
   }>({ isOpen: false, title: '', items: [] })
 
+  const API_BASE_URL =
+    import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api'
+
   const handleArtistsClick = async () => {
     try {
-      const response = await fetch(
-        'http://localhost:3000/api/songs/stats/artists'
-      )
+      const response = await fetch(`${API_BASE_URL}/songs/stats/artists`)
       const data = await response.json()
       setDialogState({
         isOpen: true,
@@ -65,9 +66,7 @@ export const SongMetadata = () => {
 
   const handleAlbumsClick = async () => {
     try {
-      const response = await fetch(
-        'http://localhost:3000/api/songs/stats/albums'
-      )
+      const response = await fetch(`${API_BASE_URL}/songs/stats/albums`)
       const data = await response.json()
       setDialogState({
         isOpen: true,

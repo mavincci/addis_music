@@ -205,6 +205,34 @@ async function deleteSong(req: Request, resp: Response) {
   }
 }
 
+async function getMetadata(req: Request, resp: Response) {
+  try {
+    const [totalSongs, uniqueArtists, uniqueAlbums] = await Promise.all([
+      SongModel.countDocuments(),
+      SongModel.distinct('artist').then((artists) => artists.length),
+      SongModel.distinct('album').then((albums) => albums.length),
+    ])
+
+    resp.status(200).json({
+      timestamp: new Date().toISOString(),
+      isError: false,
+      message: 'FETCH_METADATA_SUCCESS',
+      data: {
+        totalSongs,
+        uniqueArtists,
+        uniqueAlbums,
+      },
+    })
+  } catch (error) {
+    resp.status(500).json({
+      timestamp: new Date().toISOString(),
+      isError: true,
+      message: 'FETCH_METADATA_FAILED',
+      data: undefined,
+    })
+  }
+}
+
 export {
   getAllSongs,
   getSong,
@@ -212,4 +240,5 @@ export {
   addMultipleSongs,
   updateSong,
   deleteSong,
+  getMetadata,
 }

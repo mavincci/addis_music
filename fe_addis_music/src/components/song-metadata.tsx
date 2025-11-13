@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import { useAppSelector } from '../store/hooks'
 
 const SongMetadataStyled = styled.section`
   margin-top: 16px;
@@ -30,19 +31,21 @@ const SongMetadataItem = styled.span`
 `
 
 export const SongMetadata = () => {
+  const { metadata } = useAppSelector((state) => state.songs)
+
   return (
     <SongMetadataStyled>
       <SongMetadataItem>
-        <p>100</p>
-        <p> Songs</p>
+        <p>{metadata?.totalSongs || 0}</p>
+        <p>Songs</p>
       </SongMetadataItem>
       <SongMetadataItem>
-        <p>100</p>
-        <p>Artist</p>
+        <p>{metadata?.uniqueArtists || 0}</p>
+        <p>Artists</p>
       </SongMetadataItem>
       <SongMetadataItem>
-        <p>100</p>
-        <p> Albums</p>
+        <p>{metadata?.uniqueAlbums || 0}</p>
+        <p>Albums</p>
       </SongMetadataItem>
     </SongMetadataStyled>
   )

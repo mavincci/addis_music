@@ -14,9 +14,13 @@ import {
   updateSongRequest,
   updateSongSuccess,
   updateSongFailure,
+  fetchMetadataRequest,
+  fetchMetadataSuccess,
+  fetchMetadataFailure,
   CreateSongPayload,
   Song,
   PaginationInfo,
+  MetadataInfo,
 } from './songs-slice'
 
 function* fetchSongsSaga(
@@ -43,9 +47,8 @@ function* createSongSaga(action: PayloadAction<CreateSongPayload>) {
   try {
     const song: Song = yield call(api.createSong, action.payload)
     yield put(createSongSuccess(song))
-    // Clear error on success
     yield put(createSongFailure(null))
-    // Refresh the current page after creation
+    yield put(fetchMetadataRequest())
     const state: { songs: { pagination: PaginationInfo | null } } =
       yield select()
     const currentPage = state.songs.pagination?.page || 1
@@ -66,6 +69,7 @@ function* deleteSongSaga(action: PayloadAction<string>) {
   try {
     yield call(api.deleteSong, action.payload)
     yield put(deleteSongSuccess(action.payload))
+    yield put(fetchMetadataRequest())
     const state: { songs: { pagination: PaginationInfo | null } } =
       yield select()
     const currentPage = state.songs.pagination?.page || 1
@@ -93,9 +97,23 @@ function* updateSongSaga(action: PayloadAction<Song>) {
   }
 }
 
+function* fetchMetadataSaga() {
+  try {
+    const metadata: MetadataInfo = yield call(api.fetchMetadata)
+    yield put(fetchMetadataSuccess(metadata))
+  } catch (error) {
+    yield put(
+      fetchMetadataFailure(
+        error instanceof Error ? error.message : 'Failed to fetch metadata'
+      )
+    )
+  }
+}
+
 export function* songsSaga() {
   yield takeEvery(fetchSongsRequest.type, fetchSongsSaga)
   yield takeEvery(createSongRequest.type, createSongSaga)
   yield takeEvery(deleteSongRequest.type, deleteSongSaga)
   yield takeEvery(updateSongRequest.type, updateSongSaga)
+  yield takeEvery(fetchMetadataRequest.type, fetchMetadataSaga)
 }

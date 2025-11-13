@@ -26,11 +26,18 @@ export interface PaginationInfo {
   hasPrev: boolean
 }
 
+export interface MetadataInfo {
+  totalSongs: number
+  uniqueArtists: number
+  uniqueAlbums: number
+}
+
 interface SongsState {
   songs: Song[]
   loading: boolean
   error: string | null
   pagination: PaginationInfo | null
+  metadata: MetadataInfo | null
 }
 
 const initialState: SongsState = {
@@ -38,6 +45,7 @@ const initialState: SongsState = {
   loading: false,
   error: null,
   pagination: null,
+  metadata: null,
 }
 
 const songsSlice = createSlice({
@@ -101,6 +109,18 @@ const songsSlice = createSlice({
       state.loading = false
       state.error = action.payload
     },
+    fetchMetadataRequest: (state) => {
+      state.loading = true
+      state.error = null
+    },
+    fetchMetadataSuccess: (state, action: PayloadAction<MetadataInfo>) => {
+      state.loading = false
+      state.metadata = action.payload
+    },
+    fetchMetadataFailure: (state, action: PayloadAction<string>) => {
+      state.loading = false
+      state.error = action.payload
+    },
   },
 })
 
@@ -117,5 +137,8 @@ export const {
   updateSongRequest,
   updateSongSuccess,
   updateSongFailure,
+  fetchMetadataRequest,
+  fetchMetadataSuccess,
+  fetchMetadataFailure,
 } = songsSlice.actions
 export default songsSlice.reducer

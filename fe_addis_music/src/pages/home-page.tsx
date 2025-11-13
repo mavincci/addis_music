@@ -10,13 +10,14 @@ import {
   deleteSongRequest,
   updateSongRequest,
   createSongRequest,
+  fetchMetadataRequest,
   Song,
   CreateSongPayload,
 } from '../store/songs-slice'
 
 export const HomePage = () => {
   const dispatch = useAppDispatch()
-  const { songs, loading, pagination, error } = useAppSelector(
+  const { songs, loading, pagination, error, metadata } = useAppSelector(
     (state) => state.songs
   )
   const [editingSong, setEditingSong] = useState<Song | null>(null)
@@ -24,6 +25,7 @@ export const HomePage = () => {
 
   useEffect(() => {
     dispatch(fetchSongsRequest({ page: 1, limit: 5 }))
+    dispatch(fetchMetadataRequest())
   }, [])
 
   const handleDeleteSong = (id: string) => {

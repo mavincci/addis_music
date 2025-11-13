@@ -1,4 +1,9 @@
-import { Song, CreateSongPayload, PaginationInfo } from './songs-slice'
+import {
+  Song,
+  CreateSongPayload,
+  PaginationInfo,
+  MetadataInfo,
+} from './songs-slice'
 
 const API_BASE_URL = 'http://localhost:3000/api'
 
@@ -46,6 +51,12 @@ export const api = {
         genre: song.genre,
       }),
     })
+    const data = await response.json()
+    return data.data
+  },
+
+  fetchMetadata: async (): Promise<MetadataInfo> => {
+    const response = await fetch(`${API_BASE_URL}/songs/metadata`)
     const data = await response.json()
     return data.data
   },

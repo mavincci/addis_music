@@ -233,6 +233,52 @@ async function getMetadata(req: Request, resp: Response) {
   }
 }
 
+async function getArtistStats(req: Request, resp: Response) {
+  try {
+    const artistStats = await SongModel.aggregate([
+      { $group: { _id: '$artist', count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
+    ])
+
+    resp.status(200).json({
+      timestamp: new Date().toISOString(),
+      isError: false,
+      message: 'FETCH_ARTIST_STATS_SUCCESS',
+      data: artistStats.map((item) => ({ name: item._id, count: item.count })),
+    })
+  } catch (error) {
+    resp.status(500).json({
+      timestamp: new Date().toISOString(),
+      isError: true,
+      message: 'FETCH_ARTIST_STATS_FAILED',
+      data: undefined,
+    })
+  }
+}
+
+async function getAlbumStats(req: Request, resp: Response) {
+  try {
+    const albumStats = await SongModel.aggregate([
+      { $group: { _id: '$album', count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
+    ])
+
+    resp.status(200).json({
+      timestamp: new Date().toISOString(),
+      isError: false,
+      message: 'FETCH_ALBUM_STATS_SUCCESS',
+      data: albumStats.map((item) => ({ name: item._id, count: item.count })),
+    })
+  } catch (error) {
+    resp.status(500).json({
+      timestamp: new Date().toISOString(),
+      isError: true,
+      message: 'FETCH_ALBUM_STATS_FAILED',
+      data: undefined,
+    })
+  }
+}
+
 export {
   getAllSongs,
   getSong,
@@ -241,4 +287,6 @@ export {
   updateSong,
   deleteSong,
   getMetadata,
+  getArtistStats,
+  getAlbumStats,
 }

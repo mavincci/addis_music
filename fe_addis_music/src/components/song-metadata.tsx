@@ -1,5 +1,7 @@
+import { useState } from 'react'
 import styled from '@emotion/styled'
-import { useAppSelector } from '../store/hooks'
+import { useAppSelector, useAppDispatch } from '../store/hooks'
+import { MetadataDialog } from './metadata-dialog'
 
 const SongMetadataStyled = styled.section`
   margin-top: 16px;
@@ -14,6 +16,13 @@ const SongMetadataStyled = styled.section`
 const SongMetadataItem = styled.span`
   text-align: center;
   padding: 16px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #f5f5f5;
+  }
 
   p:first-of-type {
     font-size: 32px;
@@ -32,21 +41,70 @@ const SongMetadataItem = styled.span`
 
 export const SongMetadata = () => {
   const { metadata } = useAppSelector((state) => state.songs)
+  const [dialogState, setDialogState] = useState<{
+    isOpen: boolean
+    title: string
+    items: { name: string; count: number }[]
+  }>({ isOpen: false, title: '', items: [] })
+
+  const handleArtistsClick = async () => {
+    try {
+      const response = await fetch(
+        'http://localhost:3000/api/songs/stats/artists'
+      )
+      const data = await response.json()
+      setDialogState({
+        isOpen: true,
+        title: 'Artists',
+        items: data.data,
+      })
+    } catch (error) {
+      console.error('Failed to fetch artist stats:', error)
+    }
+  }
+
+  const handleAlbumsClick = async () => {
+    try {
+      const response = await fetch(
+        'http://localhost:3000/api/songs/stats/albums'
+      )
+      const data = await response.json()
+      setDialogState({
+        isOpen: true,
+        title: 'Albums',
+        items: data.data,
+      })
+    } catch (error) {
+      console.error('Failed to fetch album stats:', error)
+    }
+  }
+
+  const handleCloseDialog = () => {
+    setDialogState({ isOpen: false, title: '', items: [] })
+  }
 
   return (
-    <SongMetadataStyled>
-      <SongMetadataItem>
-        <p>{metadata?.totalSongs || 0}</p>
-        <p>Songs</p>
-      </SongMetadataItem>
-      <SongMetadataItem>
-        <p>{metadata?.uniqueArtists || 0}</p>
-        <p>Artists</p>
-      </SongMetadataItem>
-      <SongMetadataItem>
-        <p>{metadata?.uniqueAlbums || 0}</p>
-        <p>Albums</p>
-      </SongMetadataItem>
-    </SongMetadataStyled>
+    <>
+      <SongMetadataStyled>
+        <SongMetadataItem>
+          <p>{metadata?.totalSongs || 0}</p>
+          <p>Songs</p>
+        </SongMetadataItem>
+        <SongMetadataItem onClick={handleArtistsClick}>
+          <p>{metadata?.uniqueArtists || 0}</p>
+          <p>Artists</p>
+        </SongMetadataItem>
+        <SongMetadataItem onClick={handleAlbumsClick}>
+          <p>{metadata?.uniqueAlbums || 0}</p>
+          <p>Albums</p>
+        </SongMetadataItem>
+      </SongMetadataStyled>
+      <MetadataDialog
+        isOpen={dialogState.isOpen}
+        title={dialogState.title}
+        items={dialogState.items}
+        onClose={handleCloseDialog}
+      />
+    </>
   )
 }

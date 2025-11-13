@@ -8,6 +8,8 @@ import {
   getSong,
   updateSong,
   getMetadata,
+  getArtistStats,
+  getAlbumStats,
 } from './controllers/songs-controller'
 
 const healthRouter = Router()
@@ -19,6 +21,8 @@ const songsRouter = Router()
 
 songsRouter.get('/', getAllSongs)
 songsRouter.get('/metadata', getMetadata)
+songsRouter.get('/stats/artists', getArtistStats)
+songsRouter.get('/stats/albums', getAlbumStats)
 songsRouter.get('/:song_id', getSong)
 songsRouter.post('/', addSong)
 songsRouter.post('/multiple', addMultipleSongs)

@@ -5,13 +5,30 @@ import { SongModel } from '../models/song-model'
 async function getAllSongs(req: Request, resp: Response) {
   console.log('Fetch all songs called')
 
-  const allSongs = await SongModel.find()
+  const page = parseInt(req.query.page as string) || 1
+  const limit = parseInt(req.query.limit as string) || 10
+  const skip = (page - 1) * limit
+
+  const [songs, total] = await Promise.all([
+    SongModel.find().skip(skip).limit(limit),
+    SongModel.countDocuments(),
+  ])
+
+  const totalPages = Math.ceil(total / limit)
 
   resp.status(200).json({
     timestamp: new Date().toISOString(),
     isError: false,
     message: 'FETCH_ALL_SONGS_SUCCESS',
-    data: SongConverter.toDtoArray(allSongs),
+    data: SongConverter.toDtoArray(songs),
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages,
+      hasNext: page < totalPages,
+      hasPrev: page > 1,
+    },
   })
 }
 

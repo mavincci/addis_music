@@ -279,6 +279,69 @@ async function getAlbumStats(req: Request, resp: Response) {
   }
 }
 
+async function getSongsByArtist(req: Request, resp: Response) {
+  try {
+    const artist = req.params.artist
+    const songs = await SongModel.find({ artist }).sort({ createdAt: -1 })
+
+    resp.status(200).json({
+      timestamp: new Date().toISOString(),
+      isError: false,
+      message: 'FETCH_SONGS_BY_ARTIST_SUCCESS',
+      data: SongConverter.toDtoArray(songs),
+    })
+  } catch (error) {
+    resp.status(500).json({
+      timestamp: new Date().toISOString(),
+      isError: true,
+      message: 'FETCH_SONGS_BY_ARTIST_FAILED',
+      data: undefined,
+    })
+  }
+}
+
+async function getSongsByAlbum(req: Request, resp: Response) {
+  try {
+    const album = req.params.album
+    const songs = await SongModel.find({ album }).sort({ createdAt: -1 })
+
+    resp.status(200).json({
+      timestamp: new Date().toISOString(),
+      isError: false,
+      message: 'FETCH_SONGS_BY_ALBUM_SUCCESS',
+      data: SongConverter.toDtoArray(songs),
+    })
+  } catch (error) {
+    resp.status(500).json({
+      timestamp: new Date().toISOString(),
+      isError: true,
+      message: 'FETCH_SONGS_BY_ALBUM_FAILED',
+      data: undefined,
+    })
+  }
+}
+
+async function getSongsByGenre(req: Request, resp: Response) {
+  try {
+    const genre = req.params.genre
+    const songs = await SongModel.find({ genre }).sort({ createdAt: -1 })
+
+    resp.status(200).json({
+      timestamp: new Date().toISOString(),
+      isError: false,
+      message: 'FETCH_SONGS_BY_GENRE_SUCCESS',
+      data: SongConverter.toDtoArray(songs),
+    })
+  } catch (error) {
+    resp.status(500).json({
+      timestamp: new Date().toISOString(),
+      isError: true,
+      message: 'FETCH_SONGS_BY_GENRE_FAILED',
+      data: undefined,
+    })
+  }
+}
+
 export {
   getAllSongs,
   getSong,
@@ -289,4 +352,7 @@ export {
   getMetadata,
   getArtistStats,
   getAlbumStats,
+  getSongsByArtist,
+  getSongsByAlbum,
+  getSongsByGenre,
 }

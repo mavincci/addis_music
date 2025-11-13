@@ -1,7 +1,9 @@
+import { useState } from 'react'
 import { css } from '@emotion/css'
 import styled from '@emotion/styled'
 import { MdClose, MdEdit } from 'react-icons/md'
 import { Pagination } from './pagination'
+import { SongsDialog } from './songs-dialog'
 
 interface Song {
   _id: string
@@ -38,102 +40,162 @@ const SongItemStyled = styled.div`
   }
 `
 
-const SongItem = ({ song, onDelete, onEdit }: SongItemProps) => (
-  <SongItemStyled>
-    <div>
-      <p
-        className={css`
-          font-weight: 900;
-          font-size: 18px;
-          margin: 0;
-        `}
-      >
-        {song.title}
-      </p>
-      <p
-        className={css`
-          margin: 0;
-          font-style: italic;
-          color: #666;
-        `}
-      >
-        {song.artist}
-      </p>
-      <p
-        className={css`
-          margin: 0;
-          margin-top: 8px;
-        `}
-      >
-        {song.album}
-      </p>
-      <p
-        className={css`
-          margin: 0;
-          margin-top: 4px;
-          font-size: 14px;
-          color: #888;
-        `}
-      >
-        Genre: {song.genre}
-      </p>
-    </div>
+const SongItem = ({ song, onDelete, onEdit }: SongItemProps) => {
+  const [dialogState, setDialogState] = useState<{
+    isOpen: boolean
+    title: string
+    songs: Song[]
+  }>({ isOpen: false, title: '', songs: [] })
 
-    <div
-      className={css`
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        gap: 8px;
-      `}
-    >
-      <button
-        onClick={() => onDelete(song._id)}
-        className={css`
-          border: none;
-          background-color: white;
-          color: red;
-          cursor: pointer;
-          padding: 8px;
-          border-radius: 4px;
-          width: 36px;
-          height: 36px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
+  const handleFieldClick = async (
+    type: 'artist' | 'album' | 'genre',
+    value: string
+  ) => {
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/songs/by-${type}/${encodeURIComponent(value)}`
+      )
+      const data = await response.json()
+      setDialogState({
+        isOpen: true,
+        title: `${type.charAt(0).toUpperCase() + type.slice(1)}: ${value}`,
+        songs: data.data,
+      })
+    } catch (error) {
+      console.error(`Failed to fetch songs by ${type}:`, error)
+    }
+  }
 
-          &:hover {
-            background-color: #fee;
-          }
-        `}
-      >
-        <MdClose size={20} />
-      </button>
-      <button
-        onClick={() => onEdit(song)}
-        className={css`
-          border: 1px solid #ccc;
-          background-color: white;
-          color: #333;
-          cursor: pointer;
-          padding: 8px;
-          border-radius: 4px;
-          width: 36px;
-          height: 36px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
+  const handleCloseDialog = () => {
+    setDialogState({ isOpen: false, title: '', songs: [] })
+  }
 
-          &:hover {
-            background-color: #f5f5f5;
-          }
-        `}
-      >
-        <MdEdit size={16} />
-      </button>
-    </div>
-  </SongItemStyled>
-)
+  return (
+    <>
+      <SongItemStyled>
+        <div>
+          <p
+            className={css`
+              font-weight: 900;
+              font-size: 18px;
+              margin: 0;
+            `}
+          >
+            {song.title}
+          </p>
+          <p
+            onClick={() => handleFieldClick('artist', song.artist)}
+            className={css`
+              margin: 0;
+              font-style: italic;
+              color: #666;
+              cursor: pointer;
+
+              &:hover {
+                color: #007bff;
+                text-decoration: underline;
+              }
+            `}
+          >
+            {song.artist}
+          </p>
+          <p
+            onClick={() => handleFieldClick('album', song.album)}
+            className={css`
+              margin: 0;
+              margin-top: 8px;
+              cursor: pointer;
+
+              &:hover {
+                color: #007bff;
+                text-decoration: underline;
+              }
+            `}
+          >
+            {song.album}
+          </p>
+          <p
+            onClick={() => handleFieldClick('genre', song.genre)}
+            className={css`
+              margin: 0;
+              margin-top: 4px;
+              font-size: 14px;
+              color: #888;
+              cursor: pointer;
+
+              &:hover {
+                color: #007bff;
+                text-decoration: underline;
+              }
+            `}
+          >
+            Genre: {song.genre}
+          </p>
+        </div>
+
+        <div
+          className={css`
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 8px;
+          `}
+        >
+          <button
+            onClick={() => onDelete(song._id)}
+            className={css`
+              border: none;
+              background-color: white;
+              color: red;
+              cursor: pointer;
+              padding: 8px;
+              border-radius: 4px;
+              width: 36px;
+              height: 36px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+
+              &:hover {
+                background-color: #fee;
+              }
+            `}
+          >
+            <MdClose size={20} />
+          </button>
+          <button
+            onClick={() => onEdit(song)}
+            className={css`
+              border: 1px solid #ccc;
+              background-color: white;
+              color: #333;
+              cursor: pointer;
+              padding: 8px;
+              border-radius: 4px;
+              width: 36px;
+              height: 36px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+
+              &:hover {
+                background-color: #f5f5f5;
+              }
+            `}
+          >
+            <MdEdit size={16} />
+          </button>
+        </div>
+      </SongItemStyled>
+      <SongsDialog
+        isOpen={dialogState.isOpen}
+        title={dialogState.title}
+        songs={dialogState.songs}
+        onClose={handleCloseDialog}
+      />
+    </>
+  )
+}
 
 interface SongsListProps {
   songs?: Song[]
